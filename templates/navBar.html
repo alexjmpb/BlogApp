@@ -1,0 +1,28 @@
+<nav class="nav-bar">
+    <div class="nav-links">
+        <div class="link-home"><a href="{% url 'homepage' %}">Home</a></div>
+        <div class="link-about"><a href="">About Us</a></div>
+        <div class="link-search"><a href="">Search</a></div>
+    </div>
+    <div class="nav-auth">
+        {% if logged %}
+            <div class="auth-user">
+                <div class="user-image">
+                    <img src="" alt="User Image">
+                </div>
+                <div class="user-info">
+                    {{ username }}
+                </div>
+            </div>
+        {% else %}
+            <div class="auth-signlog">
+                <div class="login">
+                    <a href="#">login</a>
+                </div>
+                <div class="signin">
+                    <a href="#">signin</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</nav>
