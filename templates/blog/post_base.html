@@ -1,0 +1,17 @@
+{% url 'post_detail' year=post.time_posted|date:'Y' user=post.author title=post.title|slugify post_id=post.id as post_url%}
+<div class="post-header">
+    <a href="{{ post_url }}">{{post.title}}</a>
+    <div>   
+        {{post.author}}     
+    </div>
+    {{post.time_posted}}
+</div>
+{% if request.path != post_url %}
+    <div class="post-body">
+        {{post.shortened_content}}<a href="{{ post_url }}" class="post-readmore">...</a>
+    </div>
+{% else %}
+    <div class="post-body">
+        {{post.content}}
+    </div>
+{% endif %}

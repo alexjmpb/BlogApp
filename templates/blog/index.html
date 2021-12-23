@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
 {% block 'content' %}
-    <h1>Hey jude</h1>
+    <div class="main">
+        {% for post in post_list %}
+            {% include 'blog/post_base.html' %}
+        {% endfor %}
+    </div>
 {% endblock 'content'%}
