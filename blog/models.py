@@ -1,9 +1,18 @@
 from django.db import models
 from django.contrib.auth.models import User, AbstractBaseUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
-from django.utils import timezone
+from django.utils import timezone, dateformat
 from django.utils.text import slugify
+from django.urls import reverse
+import os
 import datetime
+
+
+def user_images_path(instance, filename):
+    return f'users/images/{instance.username}/{filename}'
+
+def posts_images_path(instance, filename):
+    return f'posts/images/{instance.author.username}/{instance.id}/{filename}'
 
 class UserBlogManager(BaseUserManager):
     
@@ -36,11 +45,10 @@ class UserBlogManager(BaseUserManager):
 class UserBlog(AbstractBaseUser):
     username = models.CharField(max_length=30, unique=True)
     email = models.EmailField(max_length=254, unique=True)
-    user_image = models.ImageField(blank=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-
     objects = UserBlogManager()
+    user_image = models.ImageField(upload_to=user_images_path, blank=True)
 
     USERNAME_FIELD = 'username'
     EMAIL_FIELD = 'email'
@@ -65,10 +73,19 @@ class Post(models.Model):
     content = models.TextField()
     # dattime.datetime YYMMDD HH:mm:ss:ms tzinfo
     time_posted = models.DateTimeField(default=timezone.now)
-    post_image = models.ImageField(blank=True)
+    post_image = models.ImageField(upload_to=posts_images_path, blank=True)
 
-    def shortened_content(self):
-        return self.content[0:10]
+    def slug_name(self):
+        return slugify(self.title)
+
+    #separate dates for time posted
+    def post_date(self):
+        year = dateformat.format(self.time_posted, 'Y')
+        month = dateformat.format(self.time_posted, 'm')
+        day = dateformat.format(self.time_posted, 'd')
+
+    def get_abosulte_url(self):
+        return reverse('post_detail',kwargs={'user' : self.author.username,'title' : self.slug_name(),'id' : self.id})
 
     def __str__(self):
         return self.title
@@ -81,3 +98,4 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.content[0:9]
+

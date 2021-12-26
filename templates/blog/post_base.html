@@ -1,17 +1,46 @@
-{% url 'post_detail' year=post.time_posted|date:'Y' user=post.author title=post.title|slugify post_id=post.id as post_url%}
-<div class="post-header">
-    <a href="{{ post_url }}">{{post.title}}</a>
-    <div>   
-        {{post.author}}     
+{% url 'post_detail' user=post.author id=post.id title=post|slugify as post_url %}
+<div class="main">
+    <!-- Post Header -->
+    <div class="post-header">
+        <a href="{{ post_url }}">{{post.title}}</a>
+        {% if post.post_image != '' %}
+            <div class="post-image">
+                <img src="{{ post.post_image.url }}" class="post-image-img" width=500 height=300>
+            </div>
+        {% endif %}
+        <span class="post-author">   
+            {{post.author}}     
+        </span>
+        <span class="time-posted">
+            {{ post.time_posted }}
+        </span>
     </div>
-    {{post.time_posted}}
+    <!-- Post body (check if is individual post page URL) -->
+    {% if request.path != post_url %}
+        <div class="post-body">
+            <span class="post-content">{{ post.content|slice:15 }}
+            {% if post.content|length > 15 %}
+                </span><a href="{{ post_url }}" class="post-readmore">...</a>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="post-body">
+            {{post.content}}
+        </div>
+        <div class="post-comments">
+            {% for comment in comment_list %}
+                <div class="comment-header">
+                    <div class="comment-title">
+                        {{comment.title}}
+                </div>
+                <span class="comment-author">{{comment.author}}</span>
+                <span class="time-posted">{{comment.time_posted}}</span>
+                <div class="comment-body">
+                    {{comment.content}}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <!-- End Post Body -->
 </div>
-{% if request.path != post_url %}
-    <div class="post-body">
-        {{post.shortened_content}}<a href="{{ post_url }}" class="post-readmore">...</a>
-    </div>
-{% else %}
-    <div class="post-body">
-        {{post.content}}
-    </div>
-{% endif %}
+
