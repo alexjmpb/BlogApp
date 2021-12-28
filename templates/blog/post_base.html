@@ -9,7 +9,7 @@
             </div>
         {% endif %}
         <span class="post-author">   
-            {{post.author}}     
+            <a href="{% url 'user_detail' user=post.author %}">{{post.author}}</a>     
         </span>
         <span class="time-posted">
             {{ post.time_posted }}
@@ -33,7 +33,7 @@
                     <div class="comment-title">
                         {{comment.title}}
                 </div>
-                <span class="comment-author">{{comment.author}}</span>
+                <span class="comment-author"><a href="{% url 'user_detail' user=comment.author %}">{{comment.author}}</a>  </span>
                 <span class="time-posted">{{comment.time_posted}}</span>
                 <div class="comment-body">
                     {{comment.content}}
