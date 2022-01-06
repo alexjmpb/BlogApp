@@ -48,7 +48,7 @@ class UserBlog(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     objects = UserBlogManager()
-    user_image = models.ImageField(upload_to=user_images_path, blank=True)
+    user_image = models.ImageField(upload_to=user_images_path, default='users/default_user.jpg')
 
     USERNAME_FIELD = 'username'
     EMAIL_FIELD = 'email'
@@ -93,6 +93,8 @@ class Post(models.Model):
 class Comment(models.Model):
     parent_post = models.ForeignKey(Post, on_delete=models.CASCADE)
     author = models.ForeignKey(UserBlog, on_delete=models.CASCADE)
+    reply_parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='replies')
+
     content = models.TextField()
     time_posted = models.DateTimeField(default=timezone.now)
 

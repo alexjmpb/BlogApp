@@ -1,0 +1,22 @@
+{% load static %}
+{% load blog_tags %}
+<div class="post-footer flex">
+    <button class="post-footer-likes  post-footer-button flex">
+        <img src="{% static 'svg/like.svg' %}" alt="" class="small-icon">
+        <p>2 Likes</p>
+    </button>
+    <button class="post-footer-dislikes post-footer-button flex">
+        <img src="{% static 'svg/dislike.svg' %}" alt="" class="small-icon">
+        <p>3 Dislikes</p>
+    </button>
+    <button class="post-footer-comments post-footer-button flex">
+        <img src="{% static 'svg/comment.svg' %}" alt="" class="small-icon">
+        {% with post|comment_count as comments_quantity %}
+            <p>{{ comments_quantity }} Comment{{ comments_quantity|pluralize }}</p>
+        {% endwith %}
+    </button>
+    <button class="post-footer-share post-footer-button flex">
+        <img src="{% static 'svg/share.svg' %}" alt="" class="small-icon">
+        <p>Share</p>
+    </button>
+</div>

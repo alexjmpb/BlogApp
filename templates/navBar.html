@@ -1,28 +1,58 @@
-<nav class="nav-bar">
-    <div class="nav-links">
-        <div class="link-home"><a href="{% url 'homepage' %}">Home</a></div>
-        <div class="link-about"><a href="">About Us</a></div>
-        <div class="link-search"><a href="">Search</a></div>
-    </div>
-    <div class="nav-auth">
-        {% if logged %}
-            <div class="auth-user">
-                <div class="user-image">
-                    <img src="" alt="User Image">
-                </div>
-                <div class="user-info">
-                    username
+{% load static %}
+<header class="flex">
+    <a href="{% url 'homepage' %}"><img src="{% static 'svg/logo.svg' %}" alt="" class="medium-icon logo"></a>
+    <nav id="primary-nav" class="flex primary-nav">
+        <ul class="flex">
+            <li class="nav-link"><a href="{% url 'homepage' %}" class="remove-link">Home</a></li>
+            <li class="nav-link"><a href="#" class="remove-link">Trending</a></li>
+            <li class="nav-link"><a href="#" class="remove-link">Search</a></li>
+        </ul>
+    </nav>
+    <div class="auth-bar flex">
+        {% if not request.user.is_authenticated %}
+            <button class="auth-button login">Log In</button>
+            <button class="auth-button signup">Sign up</button>
+        {% else %}
+            <div class="notification-menu menu" menu>
+                <button class="user-utils user-notifications-button menu-button" menuButton><img src="{% static 'svg/notification.svg' %}" alt=""></button>
+                <div class="notification-menu-data menu-data">
+                    <h3>Notifications</h3>
+                    <p>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet saepe accusamus maxime velit vitae aliquid necessitatibus explicabo nisi illum aut fugiat tempora inventore reiciendis voluptatem asperiores consectetur, ad assumenda! Recusandae est officia culpa unde alias accusamus, aspernatur dolorum aliquam harum vitae accusantium, reiciendis quis placeat voluptas aperiam ducimus officiis sapiente quaerat, repudiandae repellat magni perferendis! Labore quam aliquam recusandae, quaerat odio nostrum, voluptatem laborum tempore minus veritatis dignissimos maiores illum nisi ea, corrupti cumque sapiente saepe? Ex ad itaque eligendi quisquam voluptatem enim autem exercitationem, animi illo quibusdam officiis quidem rerum expedita ullam sequi sint molestias quas assumenda tempore debitis. Lorem ipsum dolor sit. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Iure voluptatibus deleniti aut quibusdam nulla, nisi voluptates. Repellendus optio voluptatum voluptatibus minus dignissimos ipsum totam, animi, labore delectus maiores asperiores consequuntur nesciunt illo excepturi. Nobis ad est nemo magnam qui optio magni commodi. Iure minima nobis placeat ratione magni laboriosam soluta excepturi perspiciatis laudantium modi deleniti ut at sint, velit consectetur illo commodi odio, tenetur expedita ad praesentium numquam atque nesciunt! Dolore quam nisi earum quae alias, obcaecati beatae et reiciendis explicabo voluptatum necessitatibus odio quis facere atque dolorum! Corrupti minus aut odio ullam culpa autem molestias unde libero facilis aperiam? Lorem ipsum dolor sit amet, consectetur adipisicing elit. Esse porro sapiente illo aut vitae voluptatum deserunt explicabo dignissimos, quidem ut molestiae in repellat illum blanditiis deleniti nemo. Excepturi repellendus delectus magnam veritatis deserunt in. Doloribus nemo fuga velit nobis magnam, enim eius labore beatae minus placeat sed, repudiandae, excepturi perferendis? Odit iure sint placeat cum inventore unde eos, vel autem velit adipisci tenetur aliquam minus harum alias dignissimos praesentium non molestiae dolorem voluptate, minima esse pariatur? Esse dolorum sequi blanditiis ullam accusamus vitae expedita suscipit ipsam saepe. Autem maiores voluptatem cumque voluptate eum nulla beatae sint iste recusandae, dignissimos nemo. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Perferendis repudiandae sed debitis, esse distinctio voluptatum natus recusandae numquam nemo dicta reprehenderit pariatur assumenda adipisci ipsa eius illo expedita delectus explicabo.
+                    </p>
                 </div>
             </div>
-        {% else %}
-            <div class="auth-signlog">
-                <div class="login">
-                    <a href="#">login</a>
+            <div class="message-menu menu" menu>
+                <button class="user-utils user-messages-button menu-button" menuButton><img src="{% static 'svg/message.svg' %}" alt=""></button>
+                <div class="message-menu-data menu-data">
+                    <h3>Messages</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Earum aut beatae esse cum incidunt blanditiis iusto dolor, amet reprehenderit, repellendus quis dicta, commodi velit eos? Nemo ex laudantium autem doloremque maxime deleniti, cupiditate nihil, fuga aliquid reprehenderit et odio. Soluta dolores hic eum amet excepturi, voluptatem eos nulla ea eius laboriosam consequuntur inventore, ipsa, minima sint harum. Ullam dolorem praesentium in a illo necessitatibus fugiat, ad reprehenderit esse nostrum! Esse, ducimus iste at eligendi corrupti hic porro quo voluptate laboriosam tenetur perferendis, animi, non maiores dolor nemo iusto commodi incidunt rerum totam illo itaque ipsa dolore expedita! Voluptates aspernatur accusantium ratione odit, vitae saepe sed ex nihil debitis impedit. Ad, ullam suscipit error modi dolore quis delectus odit corrupti! Iusto?</p>
                 </div>
-                <div class="signin">
-                    <a href="#">signin</a>
+            </div>
+            <div class="user-menu menu" menu>
+                <button class="user-utils menu-button flex" menuButton><img src="{{ request.user.user_image.url }}" alt="User Image" class="round-image"><p>{{ request.user.username|capfirst }}</p></button>
+                <div class="user-menu-data menu-data">
+                    Account
                 </div>
             </div>
         {% endif %}
     </div>
-</nav>
+    <script>
+        document.addEventListener('click', e=>{
+            let isMenuButton = (e.target.closest('[menuButton]') != null) ? true:false;
+
+            if (!isMenuButton && e.target.closest('[menu]') != null) return
+
+            let currentMenu;
+            if (isMenuButton) {
+                currentMenu = e.target.closest('[menu]');
+                currentMenu.classList.toggle('active');
+            }
+
+            document.querySelectorAll("[menu].active").forEach(menu =>{
+                if (menu === currentMenu) return
+                menu.classList.remove('active')	
+            })
+        });
+    </script>
+</header>
