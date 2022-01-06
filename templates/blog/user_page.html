@@ -2,16 +2,16 @@
 {% load static %}
 
 {% block 'content' %}
-    <div class="user-page">
-        {% if user.user_image != '' %}
-            <span class="user-image big-image"><img src="{{ user.user_image.url }}" alt="User Profile Pricture"></span>
+        <div class="user-info container">
+            <div class="user-image"><img src="{{ user.user_image.url }}" alt="User Profile Pricture" class="round-image"></div>
+            <div class="username">{{ user.username|capfirst }}</div>
+            <div class="date-joined">{{ user.date_joined|date:"Y" }}</div>
+        </div>
+        {% if post_list|length > 0 %}
+            {% include 'blog/post_base.html' %}
         {% else %}
-            <span class="user-image big-image"><img src="{% static 'images/default_user.jpg' %}" alt="User Profile Pricture"></span>
+            <div class="container">
+                <p>{{ user.username|capfirst }} does not have any posts yet!</p>
+            </div>
         {% endif %}
-        <span class="username">{{ user.username }}</span>
-        <span class="date-joined">{{ user.date_joined }}</span>
-    </div>
-    {% for post in user_posts %}
-        {% include 'blog/post_base.html' %}
-    {% endfor %}
 {% endblock 'content' %}
