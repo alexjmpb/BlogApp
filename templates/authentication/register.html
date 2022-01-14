@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load  crispy_forms_tags %}
+{% load static %}
+{% block 'content' %}
+    <div class="auth-form container flex">
+        <div class="user-image">
+            <img src="{% static 'images/default_user.jpg' %}" alt="" class="round-image" id="img-preview">
+        </div>
+        <form action="{% url 'register' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ image_form|crispy }}
+            {{ register_form|crispy }}
+            {% if request.GET.next %}
+                <input type="hidden" name="next" value="{{ request.GET.next }}"/>
+            {% endif %}
+            <input type="submit" value='Sign Up'>
+        </form>
+        <a href="{% url 'login' %}?next={{request.GET.next}}" class="auth-redirect remove-link"><p>Already have an account? Login here!</p></a>
+    </div>
+{% endblock 'content' %}

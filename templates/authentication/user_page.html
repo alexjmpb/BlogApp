@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load blog_tags %}
+{% load static %}
+{% load tz %}
+
+{% block 'content' %}
+    <div class="user-info container flex">
+        <div class="user-image"><img src="{{ user.user_image.url }}" alt="User Profile Pricture" class="round-image"></div>
+        <div class="user-info-header flex">
+            {% if is_user %}
+                <a href="{% url 'update_user_info' %}" class='edit-user-button img-button'><button><img src="{% static 'svg/edit.svg' %}" alt=""></button></a>   
+            {% endif %}
+            <div class="username">{{ user.username|capfirst }}</div>
+            <div class="date-joined">
+                <p class="bold">Date Joined</p>
+                <p class="date">{{ user.date_joined|blog_datetime_format }}</p>
+            </div>
+        </div>
+        <div class="description">
+            <h3>About Me</h3>
+            <p>{{ user.description }}"</p>
+        </div>
+    </div>
+    {% if post_list|length > 0 %}
+        {% include 'blog/post_base.html' %}
+    {% else %}
+        <div class="container">
+            <p>
+                {% if is_user %}
+                    You do
+                {% else %}
+                    {{ user.username|capfirst }} does
+                {% endif %}
+                not have any posts yet!
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa accusamus temporibus repudiandae vero cumque ratione laudantium quibusdam placeat, perferendis dolor. Eligendi, dolorem assumenda tempore incidunt labore deserunt fugiat asperiores saepe magnam atque quam accusamus, ipsa doloribus ad autem qui totam unde veniam! Necessitatibus, et sapiente. Ipsa itaque saepe tenetur veniam, libero adipisci eos assumenda debitis in odio consequatur ut. Dicta debitis deserunt dolor dolore reiciendis assumenda illo fuga omnis voluptas incidunt! Impedit eius tempora molestiae, fugit dignissimos quo animi nostrum deleniti, doloremque est quis facilis cupiditate ullam. Soluta tempora autem veritatis obcaecati error corrupti cumque illo nobis consectetur ducimus architecto, quibusdam illum dolore id, pariatur facere assumenda quam molestias. Dolores maiores, numquam iure placeat eum iusto autem labore nesciunt laborum! Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita culpa consequatur ea libero praesentium magni. Nisi nemo asperiores facilis itaque minima recusandae rem hic consectetur rerum nesciunt optio, quisquam fuga veritatis enim? Perspiciatis consequatur sed, debitis sit natus incidunt quam officiis placeat, molestiae corrupti nostrum deserunt eaque consectetur nulla illum eum minus reprehenderit ad harum repudiandae quo. Mollitia ipsa consectetur omnis accusamus ea corrupti totam et error sint qui voluptate quas voluptatibus, ducimus ut impedit dolorem fugit iusto inventore aliquid sed! Quo officia harum quod at labore est voluptatem ut fuga illum. Alias neque perferendis aut, laudantium error porro. Quis hic consequuntur blanditiis nemo facere eum, tenetur consectetur rerum. Ducimus eligendi nisi nulla repudiandae minus perferendis quo ea nam ipsam.
+            </p>
+        </div>
+    {% endif %}
+{% endblock 'content' %}
+

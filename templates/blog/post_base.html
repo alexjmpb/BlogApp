@@ -1,88 +1,97 @@
 {% load static %}
 {% load blog_tags %}
+{% load tz %}
 
 <div class="posts">
-    {% for post in post_list %}
-    {% url 'post_detail' user=post.author id=post.id title=post|slugify as post_url %}
-            <div class="individual-post container">
-                <!-- Post Header -->
-                <div class="post-header">
-                    <div class="post-user flex">
-                        <div class="author-image">
-                            <a href="{% url 'user_detail' user=post.author %}"><img src="{{ post.author.user_image.url }}" alt="User image" class="round-image"></a>
+    {% if post_list|length > 0 %}
+        {% for post in post_list %}
+        {% url 'post_detail' user=post.author id=post.id title=post|slugify as post_url %}
+                <div class="individual-post container">
+                    <!-- Post Header -->
+                    <div class="post-header">
+                        <div class="post-user flex">
+                            <div class="author-image">
+                                <a href="{% url 'user_detail' user=post.author %}"><img src="{{ post.author.user_image.url }}" alt="User image" class="round-image"></a>
+                            </div>
+                            <a href="{% url 'user_detail' user=post.author %}" class="remove-link author-username"><p>{{post.author|capfirst}}</p></a>     
+                            <div class="time-posted">
+                                <p class="date">{{ post.time_posted|blog_datetime_format }}</p>
+                            </div>
                         </div>
-                        <a href="{% url 'user_detail' user=post.author %}" class="remove-link author-username"><p>{{post.author|capfirst}}</p></a>     
-                        <div class="time-posted">
-                            <p class="date">{{ post.time_posted|date:"l, M jS, Y \a\t f A" }}</p>
+                        <div class="post-title">
+                            <a href="{{ post_url }}" class="remove-link">
+                                <h3>{{post.title}}</h3>
+                            </a>
                         </div>
+                        {% if post.post_image != '' %}
+                                <img src="{{ post.post_image.url }}" class="post-image-img" width=500 height=300>
+                        {% endif %}
                     </div>
-                    <div class="post-title">
-                        <a href="{{ post_url }}" class="remove-link">
-                            <h3>{{post.title}}</h3>
-                        </a>
-                    </div>
-                    {% if post.post_image != '' %}
-                            <img src="{{ post.post_image.url }}" class="post-image-img" width=500 height=300>
-                    {% endif %}
-                </div>
-                <!-- Post body (check if is individual post page URL) -->
-                {% if not is_post_url %}
-                    <div class="post-body">
-                        <a href="{{ post_url }}" class="remove-link">
-                            <div class="post-content shortened-content">
-                                <p>{{ post.content|slice:300 }}</p>
-                            </div>
-                        </a>
-                    </div>
-                    {% include 'blog/post_footer.html' %}
-                {% else %}
-                    <div class="post-body">
-                        <p>{{post.content}}</p>
-                    </div>
-                    {% include 'blog/post_footer.html' %}
-                    <!-- Post comments -->
-                    <h3>Comments {{ post|comment_count }}</h3>
-                    <div class="comments flex">
-                    {% for comment in comment_list %}
-                        <div class="comment">
-                            <!-- comment header -->
-                            <div class="comment-header flex">
-                                <div class="author-image">
-                                    <a href="{% url 'user_detail' user=comment.author %}"><img src="{{ comment.author.user_image.url }}" alt="" class="round-image"></a>
+                    <!-- Post body (check if is individual post page URL) -->
+                    {% if not is_post_url %}
+                        <div class="post-body">
+                            <a href="{{ post_url }}" class="remove-link">
+                                <div class="post-content shortened-content">
+                                    <p>{{ post.content|slice:300 }}</p>
                                 </div>
-                                    <a href="{% url 'user_detail' user=comment.author %}" class="remove-link author-username"><p>{{comment.author|capfirst}}</p></a>
-                                <div class="time-posted date">
-                                    <p>{{comment.time_posted}}</p>
-                                </div>
-                            </div>
-                            <div class="comment-body">
-                                <p>{{comment.content}}</p>
-                            </div>
-                            <!-- Comment replies -->
-                            <div class="replies">
-                                {% for reply in comment.replies.all %}
-                                    <div class="reply">
-                                        <!-- replies header -->
-                                        <div class="reply-header flex">
-                                            <div class="author-image">
-                                                <a href="{% url 'user_detail' user=reply.author %}"><img src="{{ reply.author.user_image.url }}" alt="" class="round-image"></a>
-                                            </div>
-                                                <a href="{% url 'user_detail' user=reply.author %}" class="remove-link author-username"><p>{{reply.author|capfirst}}</p></a>
-                                            <div class="time-posted date">
-                                                <p>{{reply.time_posted}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="reply-body">
-                                            <p>{{reply.content}}</p>
-                                        </div>
+                            </a>
+                        </div>
+                        {% include 'blog/post_footer.html' %}
+                    {% else %}
+                        <div class="post-body">
+                            <p>{{post.content}}</p>
+                        </div>
+                        {% include 'blog/post_footer.html' %}
+                        <!-- Post comments -->
+                        <h3>Comments {{ post|comment_count }}</h3>
+                        <div class="comments flex">
+                        {% for comment in comment_list %}
+                            <div class="comment">
+                                <!-- comment header -->
+                                <div class="comment-header flex">
+                                    <div class="author-image">
+                                        <a href="{% url 'user_detail' user=comment.author %}"><img src="{{ comment.author.user_image.url }}" alt="" class="round-image"></a>
                                     </div>
-                                {% endfor %}
+                                        <a href="{% url 'user_detail' user=comment.author %}" class="remove-link author-username"><p>{{comment.author|capfirst}}</p></a>
+                                    <div class="time-posted date">
+                                        <p>{{comment.time_posted}}</p>
+                                    </div>
+                                </div>
+                                <div class="comment-body">
+                                    <p>{{comment.content}}</p>
+                                </div>
+                                <!-- Comment replies -->
+                                <div class="replies">
+                                    {% for reply in comment.replies.all %}
+                                        <div class="reply">
+                                            <!-- replies header -->
+                                            <div class="reply-header flex">
+                                                <div class="author-image">
+                                                    <a href="{% url 'user_detail' user=reply.author %}"><img src="{{ reply.author.user_image.url }}" alt="" class="round-image"></a>
+                                                </div>
+                                                    <a href="{% url 'user_detail' user=reply.author %}" class="remove-link author-username"><p>{{reply.author|capfirst}}</p></a>
+                                                <div class="time-posted date">
+                                                    <p>{{reply.time_posted}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="reply-body">
+                                                <p>{{reply.content}}</p>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
                             </div>
-                        </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-                <!-- End Post Body -->
-            </div>      
-    {% endfor %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <!-- End Post Body -->
+                </div>      
+        {% endfor %}
+    {% else %}
+        <div class="container">
+            <p>
+                There are no posts for you yet!
+            </p>
+        </div>
+    {% endif %}
 </div>

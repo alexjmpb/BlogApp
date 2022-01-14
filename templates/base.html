@@ -9,13 +9,58 @@
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="my_jquery_functions.js"></script>
+    <link rel="shortcut icon" href="{% static 'svg/logo_short.svg' %}" type="image/x-icon">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <title>Document</title>
+    <title>Blog App</title>
+    <!-- Dropdowns and menus script -->
+    <script>
+        document.addEventListener('click', e=>{
+            let isMenuButton = (e.target.closest('[menuButton]') != null) ? true:false;
+
+            if (!isMenuButton && e.target.closest('[menu]') != null) return
+
+            let currentMenu;
+            if (isMenuButton) {
+                currentMenu = e.target.closest('[menu]');
+                currentMenu.classList.toggle('active');
+            }
+
+            document.querySelectorAll("[menu].active").forEach(menu =>{
+                if (menu === currentMenu) return
+                menu.classList.remove('active')	
+            })
+        });
+    </script>
+    <!-- SHow preview of uploaded file -->
+    <script>
+        function previewFile() {
+        const preview = document.querySelector('#img-preview');
+        const file = document.querySelector('input[type=file]').files[0];
+        console.log(file, preview)
+        const reader = new FileReader();
+
+        reader.addEventListener("load", function () {
+            console.log(reader.result)
+            preview.src = reader.result;
+        }, false);
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+        }
+    </script>
 </head>
 <body>
     {% include "navBar.html" %}
+    {% if messages %}
+        <div class="alert-block messages-block">
+            <ul>
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }} messages container"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
     <main class="flex">
         {% block 'content' %}
         {% endblock 'content'%}
