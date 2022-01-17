@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 
 {% block 'content' %}
-    <div class="auth-form container flex">
+    <div class="form-box container flex">
         <form action="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ login_form|crispy }}

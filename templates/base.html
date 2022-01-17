@@ -40,13 +40,13 @@
         const reader = new FileReader();
 
         reader.addEventListener("load", function () {
-            console.log(reader.result)
-            preview.src = reader.result;
-        }, false);
+                console.log(reader.result)
+                preview.src = reader.result;
+            }, false);
 
-        if (file) {
-            reader.readAsDataURL(file);
-        }
+            if (file) {
+                reader.readAsDataURL(file);
+            }
         }
     </script>
 </head>

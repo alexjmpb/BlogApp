@@ -4,6 +4,7 @@ from .forms import CreateUserForm, UpdateUserInfo, UserImageForm
 from django.contrib.auth.forms import AuthenticationForm
 from .models import UserBlog
 from blog.models import Post
+from django.utils.translation import gettext as _
 from django.contrib.auth import views as builtin_auth_views
 from django.contrib.auth import logout
 from django.contrib.auth import authenticate, login
@@ -12,6 +13,12 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic.edit import FormMixin
+from settings import settings
+from django.views.generic.edit import DeleteView
+from django.contrib.auth.mixins import (
+    UserPassesTestMixin,
+    LoginRequiredMixin
+)
 
 def register_user(request, *kwargs):
     if request.method == "POST":
@@ -31,8 +38,12 @@ def register_user(request, *kwargs):
             if user_auth is not None:
                 login(request, user_auth)
                 if request.POST.get('next') is not None:
-                    return redirect(request.POST.get('next'))
+                    if request.POST.get('next') == 'user_page':
+                        return redirect('user_detail', user=request.POST['username'])
+                    else:
+                        return redirect(request.POST.get('next'))
                 else:
+                    messages.success(request, _(f'User created successfully, Welcome {request.user}'))
                     return redirect('homepage')
             else:
                 return redirect(reverse('register'))
@@ -57,8 +68,13 @@ def login_user(request, *kwargs):
             if user_auth is not None:
                 login(request, user_auth)
                 if request.POST.get('next') is not None:
-                    return redirect(request.POST.get('next'))
+                    messages.success(request, _('Login successful!'))
+                    if request.POST.get('next') == 'user_page':
+                        return redirect('user_detail', user=request.POST['username'])
+                    else:
+                        return redirect(request.POST.get('next'))
                 else:
+                    messages.success(request, _('Login successful!'))
                     return redirect('homepage')
             else:
                 pass
@@ -75,6 +91,8 @@ def logout_user(request):
     return redirect('homepage')
 
 def user_blog_view(request, **kwargs):
+    if kwargs.get('user') == 'AnonymousUser':
+        return redirect('%s?next=%s' % (settings.LOGIN_URL, 'user_page'))
     username_passed = kwargs.get('user')
     user = UserBlog.objects.get(username__iexact=username_passed)
     post_list = Post.objects.all().filter(author_id=user.id)
@@ -116,3 +134,12 @@ def update_user_info(request, **kwargs):
         info_form = UpdateUserInfo(instance=user_instance)
         image_form = UserImageForm()
     return render(request, 'authentication/update_user.html', {'info_form' : info_form, 'image_form' : image_form})
+
+class DeleteUserView(UserPassesTestMixin, DeleteView, LoginRequiredMixin):
+    model = UserBlog
+    template_name = 'authentication/delete_user.html'
+    success_url = reverse_lazy('homepage')
+
+    def test_func(self):
+        obj = self.get_object()
+        return obj == self.request.user

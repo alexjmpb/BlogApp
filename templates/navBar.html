@@ -1,4 +1,5 @@
 {% load static %}
+{% load blog_tags %}
 <header class="flex">
     <a href="{% url 'homepage' %}"><img src="{% static 'svg/logo.svg' %}" alt="" class="medium-icon logo"></a>
     <nav id="primary-nav" class="flex primary-nav">
@@ -16,22 +17,24 @@
                 <button class="user-utils user-notifications-button menu-button" menuButton><img src="{% static 'svg/notification.svg' %}" alt=""></button>
                 <div class="notification-menu-data menu-data">
                     <h3>Notifications</h3>
+                    <p>Coming soon</p>
                 </div>
             </div>
             <div class="message-menu menu" menu>
                 <button class="user-utils user-messages-button menu-button" menuButton><img src="{% static 'svg/message.svg' %}" alt=""></button>
                 <div class="message-menu-data menu-data">
                     <h3>Messages</h3>
+                    <p>Coming soon</p>
                 </div>
             </div>
             <div class="user-menu menu" menu>
-                <button class="user-utils user-info-button menu-button flex" menuButton><img src="{{ request.user.user_image.url }}" alt="User Image" class="round-image"><p>{{ request.user.username|capfirst }}</p></button>
+                <button class="user-utils user-info-button menu-button flex" menuButton><img src="{{ request.user.user_image.url }}" alt="" class="round-image"><p>{{ request.user.username|capfirst }}</p></button>
                 <div class="user-menu-data menu-data">
                     <div class="user-menu-links">
                         <a href="{% url 'user_detail' user=request.user %}" class="remove-link bold"><img src="{% static 'svg/profile.svg' %}" alt="">Profile</a>
                         <a href="{% url 'update_user_info'%}" class="remove-link bold"><img src="{% static 'svg/settings.svg' %}" alt="">Settings</a>
                     </div>
-                    <a href="{% url 'logout' %}"><button>Log out</button></a>
+                    <a href="{% url 'logout' %}"><button class="logout">Log out</button></a>
                 </div>
             </div>
         {% endif %}

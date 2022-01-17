@@ -10,7 +10,7 @@ from django.db.models import Q
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Field
 
-allowed_username_characters = 'abcdefghijklmnopqrstuvxyz.0123456789_-'
+allowed_username_characters = 'abcdefghijklmnopqrstuvwxyz.0123456789_-'
 
 class UserBaseForm(forms.Form):
     username = forms.CharField(label=_('Username'), validators=[MinLengthValidator(3, message=_("Your username must have at least 3 characters"))])

@@ -2,7 +2,18 @@
 {% load blog_tags %}
 {% load tz %}
 
+{{ is_user_post }}
 <div class="posts">
+
+    {% if is_user or not 'user' in request.path %}
+        <div class="post-form form-box container">
+            {{ request.get }}
+            <form action=""class="flex">
+                <a href="{% url 'user_detail' user=request.user %}"><img src="{% if not request.user.is_anonymous %}{{ request.user.user_image.url }}{% else %}{% static 'images/default_user.jpg' %}{% endif %}" alt="" class="round-image"></a>
+                <a href="{% url 'create_post' %}" class="input-redirect"><input type="text" placeholder="Create Post"></a>
+            </form>
+        </div>
+    {% endif %}
     {% if post_list|length > 0 %}
         {% for post in post_list %}
         {% url 'post_detail' user=post.author id=post.id title=post|slugify as post_url %}
@@ -43,45 +54,7 @@
                         </div>
                         {% include 'blog/post_footer.html' %}
                         <!-- Post comments -->
-                        <h3>Comments {{ post|comment_count }}</h3>
-                        <div class="comments flex">
-                        {% for comment in comment_list %}
-                            <div class="comment">
-                                <!-- comment header -->
-                                <div class="comment-header flex">
-                                    <div class="author-image">
-                                        <a href="{% url 'user_detail' user=comment.author %}"><img src="{{ comment.author.user_image.url }}" alt="" class="round-image"></a>
-                                    </div>
-                                        <a href="{% url 'user_detail' user=comment.author %}" class="remove-link author-username"><p>{{comment.author|capfirst}}</p></a>
-                                    <div class="time-posted date">
-                                        <p>{{comment.time_posted}}</p>
-                                    </div>
-                                </div>
-                                <div class="comment-body">
-                                    <p>{{comment.content}}</p>
-                                </div>
-                                <!-- Comment replies -->
-                                <div class="replies">
-                                    {% for reply in comment.replies.all %}
-                                        <div class="reply">
-                                            <!-- replies header -->
-                                            <div class="reply-header flex">
-                                                <div class="author-image">
-                                                    <a href="{% url 'user_detail' user=reply.author %}"><img src="{{ reply.author.user_image.url }}" alt="" class="round-image"></a>
-                                                </div>
-                                                    <a href="{% url 'user_detail' user=reply.author %}" class="remove-link author-username"><p>{{reply.author|capfirst}}</p></a>
-                                                <div class="time-posted date">
-                                                    <p>{{reply.time_posted}}</p>
-                                                </div>
-                                            </div>
-                                            <div class="reply-body">
-                                                <p>{{reply.content}}</p>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        {% endfor %}
+                        {% include 'blog/comments_base.html' %}
                     </div>
                     {% endif %}
                     <!-- End Post Body -->

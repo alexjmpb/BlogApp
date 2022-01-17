@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User, AbstractBaseUser, BaseUserManager
 from django.utils import timezone, dateformat
 from django.core.validators import validate_image_file_extension
+from PIL import Image
 
 
 
@@ -50,6 +51,8 @@ class UserBlog(AbstractBaseUser):
     user_image = models.ImageField(upload_to=user_images_path, default='users/default_user.jpg', validators=[validate_image_file_extension])
     date_joined = models.DateTimeField(default=timezone.now)
 
+
+
     USERNAME_FIELD = 'username'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = ['email']
@@ -66,4 +69,14 @@ class UserBlog(AbstractBaseUser):
 
     def __str__(self):
         return self.username
+
+    def save(self, *args, **kwargs):
+        super(UserBlog, self).save(*args, **kwargs)
+        if self.user_image:
+            img = Image.open(self.user_image.path)
+
+            if img.height > 300 or img.width > 300:
+                size = (300, 300)
+                img.thumbnail(size)
+                img.save(self.user_image.path)
 
