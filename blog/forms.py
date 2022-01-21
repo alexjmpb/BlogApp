@@ -5,31 +5,30 @@ from blog.models import Post, Comment
 from authentication.models import UserBlog
 from django.forms import inlineformset_factory
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.core.validators import MinLengthValidator
 
 class BasePostForm(forms.ModelForm):
     post_image = forms.ImageField(widget=forms.FileInput(attrs={'onchange' : "previewFile()"}), required=False)
+    title = forms.CharField(validators=[MinLengthValidator(8, message=_("The title must have at least 8 characters"))])
+    content = forms.CharField(max_length=20000, widget=forms.Textarea(), validators=[MinLengthValidator(8, message=_("The content must have at least 8 characters"))])
 
     class Meta:
         model = Post
         fields = ('title', 'content', 'post_image')
-
-
-    def save(self, commit=True):
-        post = super().save(commit=False)
-        post.author = self.instance.author
-
-        if commit:
-            post.save()
-        return post
-
-
 
 class CreatePostForm(BasePostForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super(CreatePostForm, self).__init__(*args, **kwargs)
 
+    
+    def save(self, commit=True):
+        post = super().save(commit=False)
+        post.author = self.user
+
+        if commit:
+            post.save()
+        return post
 
 class CreateCommentForm(forms.ModelForm):
     content = forms.CharField(max_length=2500, widget=forms.Textarea(attrs={'placeholder' : 'Comment something about this'}))
@@ -59,4 +58,10 @@ class CreateCommentForm(forms.ModelForm):
         return comment
 
 class UpdatePostForm(BasePostForm):
-    pass
+    def save(self, commit=True):
+        post = super().save(commit=False)
+        post.author = self.instance.author
+
+        if commit:
+            post.save()
+        return post

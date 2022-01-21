@@ -8,6 +8,9 @@ django = "*"
 psycopg2 = "*"
 django-crispy-forms = "*"
 pillow = "*"
+environs = {extras = ["django"], version = "*"}
+whitenoise = "*"
+gunicorn = "*"
 
 [dev-packages]
 

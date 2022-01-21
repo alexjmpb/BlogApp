@@ -21,7 +21,7 @@ class UserBaseForm(forms.Form):
 
         for letter in username:
             if not letter.lower() in allowed_username_characters:
-                raise ValidationError(_("Your username cannot contain special character such as: \" ' / * + - [ ] { } or others"))
+                raise ValidationError(_("Your username cannot contain spaces or special characters such as: \" ' / * + - [ ] { } or others"))
 
 
         if len(list(UserBlog.objects.filter(username__iexact=username))):

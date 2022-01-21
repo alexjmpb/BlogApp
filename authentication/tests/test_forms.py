@@ -1,13 +1,7 @@
 from django.test import TestCase
-from authentication.forms import CreateUserForm
+from authentication.forms import CreateUserForm, UpdateUserInfo
 from authentication.models import UserBlog
-from django.http import HttpRequest
-from django.core.exceptions import ValidationError
 from django.urls import reverse
-from authentication.views import register_user
-from django.contrib.auth.hashers import make_password
-
-import tempfile
 
 class CreateUserTest(TestCase):
     def dummy_data(self, username='testuser', email='test@test.com', password1='Testpass10', password2='Testpass10'):
@@ -19,29 +13,40 @@ class CreateUserTest(TestCase):
         }
 
     def generate_response(self, information):
-        rqst = reverse('register')
-        resp = self.client.post(rqst, data=information)
-        form = resp.context['form']
-
-        return rqst, resp, form
+        resp = self.client.post(reverse('register'), data=information)
+        return resp
 
     def test_valid_form(self):
         user_data = self.dummy_data()
-        form = CreateUserForm(data=user_data)
-        print(form.errors)
+        form = CreateUserForm(data=self.dummy_data())
         self.assertTrue(form.is_valid())
 
     def test_username_min_char_validation(self):
         user_data = self.dummy_data(username='Te')
-        rqst, resp, form = self.generate_response(information=user_data)
-        self.assertFormError(resp, 'form', 'username', "Your username must have at least 3 characters")
+        resp = self.generate_response(information=user_data)
+        self.assertFormError(resp, 'register_form', 'username', "Your username must have at least 3 characters")
 
     def test_password_upper_validation(self):
         user_data = self.dummy_data(password1='testpass1001', password2='testpass1001')
-        rqst, resp, form = self.generate_response(information=user_data)
-        self.assertFormError(resp, 'form', 'password1', "Your password must contain at least one uppercase letter")
+        resp = self.generate_response(information=user_data)
+        self.assertFormError(resp, 'register_form', 'password1', "Your password must contain at least one uppercase letter")
 
     def test_invalid_email(self):
         user_data = self.dummy_data(email='test.com')
-        rqst, resp, form = self.generate_response(information=user_data)
-        self.assertFormError(resp, 'form', 'email', "Please enter a valid email")
+        resp = self.generate_response(information=user_data)
+        self.assertFormError(resp, 'register_form', 'email', "Please enter a valid email")
+
+class UpdateUserForm(TestCase):
+    def setUp(self):
+        user = UserBlog.objects.create(username='testuser', email='test@test.com', password='Testpass10')
+
+    def dummy_data(self, username='testuser2', email='test2@test.com'):
+        return {
+            'username' : username,
+            'email' : email,
+        }
+    
+    def test_update_username(self):
+        user_data = self.dummy_data()
+        form = UpdateUserInfo(data=user_data)
+        self.assertTrue(form.is_valid())

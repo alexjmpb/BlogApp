@@ -21,7 +21,7 @@ from django.contrib.auth.mixins import (
 from django.core.exceptions import PermissionDenied
 
 def homepage(request):
-    post_list = Post.objects.all()
+    post_list = Post.objects.all().order_by('-time_posted')
     context = {
         'post_list' : post_list,
     }
@@ -41,7 +41,7 @@ def post_archives(request, **kwargs):
     # Filters of post list according to arguments
     if 'user' in kwargs:
         #Filter user posts
-        post_list = post_list.filter(Q(author__username__iexact=current_post_author))
+        post_list = post_list.filter(Q(author__username__iexact=current_post_author)).order_by('-time_posted')
     if 'id' in kwargs:
         #Filter individual posts
         post_list = post_list.filter(Q(id=current_post_id))
