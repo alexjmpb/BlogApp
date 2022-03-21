@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load  crispy_forms_tags %}
+{% load static %}
+{% block 'content' %}
+    <div class="form-box container flex">
+        <div class="user-image">
+            <img src="{{ request.user.user_image.url }}" alt="" class="round-image" id="img-preview">
+        </div>
+        
+        <form action="{% url 'update_user_info' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ image_form|crispy }}
+            {{ info_form|crispy }}
+            <div class="update-password flex">
+                <label>Password</label>
+                <a href="{% url 'password_change' %}" class="update-pass-button img-button"><button type="button"><img src="{% static 'svg/edit.svg' %}" alt=""></button></a>   
+            </div>
+            <div class="delete-user">
+                <a href="{% url 'delete_user' pk=request.user.id%}" class="remove-link">Delete User</a>
+            </div>
+            <input type="submit" value='Update'>
+        </form>
+    </div>
+{% endblock 'content' %}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load blog_tags %}
+{% load static %}
+{% load tz %}
+
+{% block 'content' %}
+    <div class="user-info container flex">
+        <div class="user-image"><img src="{{ user.user_image.url }}" alt="User Profile Pricture" class="round-image"></div>
+        <div class="user-info-header flex">
+            {% if is_user %}
+                <a href="{% url 'update_user_info' %}" class='edit-user-button img-button'><button><img src="{% static 'svg/edit.svg' %}" alt=""></button></a>   
+            {% endif %}
+            <div class="username">{{ user.username|capfirst }}</div>
+            <div class="date-joined">
+                <p class="bold">Date Joined</p>
+                <p class="date">{{ user.date_joined|blog_datetime_format }}</p>
+            </div>
+        </div>
+        <div class="description">
+            <h3>About Me</h3>
+            <p>{{ user.description }}"</p>
+        </div>
+    </div>
+    {% if post_list|length > 0 %}
+        {% include 'blog/post_base.html' %}
+    {% else %}
+        <div class="container">
+            <p>
+                {% if is_user %}
+                    You do
+                {% else %}
+                    {{ user.username|capfirst }} does
+                {% endif %}
+                not have any posts yet!
+            </p>
+        </div>
+    {% endif %}
+{% endblock 'content' %}
+

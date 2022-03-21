@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block 'content' %}
+    <div class="form-box container flex">
+        <form action="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ login_form|crispy }}
+            {% if request.GET.next %}
+                <input type="hidden" name="next" value="{{ request.GET.next }}"/>
+            {% endif %}
+            <input type="submit" value='Log In'>
+        </form>
+        <a href="{% url 'register' %}?next={{request.GET.next}}" class="auth-redirect remove-link"><p>Don't have an account yet? Create a new one here!</p></a>
+    </div>
+    
+{% endblock 'content' %}

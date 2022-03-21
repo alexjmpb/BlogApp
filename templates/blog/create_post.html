@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load  crispy_forms_tags %}
+{% load static %}
+{% block 'content' %}
+    <div class="form-box container flex">
+        <div class="default-image flex">
+            <img src="{% static 'images/default-img.jpg' %}" id="img-preview">
+        </div>
+        <form action="{% url 'create_post' %}" method="post" enctype="multipart/form-data" formTo="post">
+            {% csrf_token %}
+            {{ post_form|crispy }}
+            <input type="submit" value='Create'>
+        </form>
+    </div>
+{% endblock 'content' %}

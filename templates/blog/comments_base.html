@@ -1,0 +1,90 @@
+{% load blog_tags %}
+{% load crispy_forms_tags %}
+{% load static %}
+<div class="form-box flex">
+    <form action="{{ post_url }}" method="post" enctype="multipart/form-data" class="form-comment">
+        {% csrf_token %}
+        {{ comment_form|crispy }}
+        <input type="submit" value='Comment'>
+    </form>
+</div>
+<h3>Comments {{ post|comment_count }}</h3>
+<div class="comments flex">
+{% for comment in comment_list %}
+    <div class="comment" id="comment-{{ comment.id }}">
+        <!-- comment header -->
+        <div class="comment-header flex">
+            <div class="author-image">
+                <a href="{% url 'user_detail' user=comment.author %}"><img src="{{ comment.author.user_image.url }}" alt="" class="round-image"></a>
+            </div>
+                <a href="{% url 'user_detail' user=comment.author %}" class="remove-link author-username"><p>{{comment.author|capfirst}}</p></a>
+            <div class="time-posted date">
+                <p>{{comment.time_posted}}</p>
+            </div>
+        </div>
+        <div class="comment-body">
+            <p>{{comment.content}}</p>
+        </div>
+        <div class="comment-footer flex">
+            <button class="post-footer-comments post-footer-button flex" onclick="reply(this)" commentId="{{ comment.id }}">
+                <img src="{% static 'svg/comment.svg' %}" alt="" class="small-icon">
+                <p>Reply</p>
+                <script>
+                    function reply(comment) {
+                        commentId = comment.getAttribute('commentId');
+                        replyForm =  document.querySelector(`#reply-form-${commentId}`);
+                        replyForm.style.display = 'block';
+                        replyTextarea = document.querySelector(`#reply-form-${commentId} textarea`);
+                        replyTextarea.focus()
+                        replyTextarea.scrollIntoView({behavior: 'smooth', block: 'center'});
+                    };
+                </script>
+            </button>
+            {% if request.user == comment.author %}
+                <a href="{% url 'delete_comment' pk=comment.id %}" class="remove-link">
+                    <button class="post-footer-delete post-footer-button flex">
+                        <img src="{% static 'svg/delete.svg' %}" alt="" class="small-icon">
+                        <p>Delete</p>
+                    </button>
+                </a>
+            {% endif %}
+        </div>
+        <!-- Comment replies -->
+        <div class="replies">
+            {% for reply in comment.replies.all %}
+                <div class="reply" id="reply-{{ reply.id }}">
+                    <!-- replies header -->
+                    <div class="reply-header flex">
+                        <div class="author-image">
+                            <a href="{% url 'user_detail' user=reply.author %}"><img src="{{ reply.author.user_image.url }}" alt="" class="round-image"></a>
+                        </div>
+                            <a href="{% url 'user_detail' user=reply.author %}" class="remove-link author-username"><p>{{reply.author|capfirst}}</p></a>
+                        <div class="time-posted date">
+                            <p>{{reply.time_posted}}</p>
+                        </div>
+                        {% if request.user == reply.author %}
+                            <a href="{% url 'delete_comment' pk=reply.id %}" class="remove-link">
+                                <button class="post-footer-delete post-footer-button flex">
+                                    <img src="{% static 'svg/delete.svg' %}" alt="" class="small-icon">
+                                </button>
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="reply-body">
+                        <p>{{reply.content}}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {{comment_id}}
+        <div class="form-box flex">
+            <form action="" method="post" class="form-reply" id="reply-form-{{ comment.id }}">
+                {% csrf_token %}
+                {{ reply_form|crispy }}
+                <input type="text" name="parent_comment" value="{{comment.id}}" hidden='true'>
+                <input type="submit" value="Reply">
+            </form>
+        </div>
+
+    </div>
+{% endfor %}

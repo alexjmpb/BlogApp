@@ -1,0 +1,70 @@
+{% load static %}
+{% load blog_tags %}
+{% load tz %}
+
+{{ is_user_post }}
+<div class="posts">
+
+    {% if is_user or not 'user' in request.path %}
+        <div class="post-form form-box container">
+            {{ request.get }}
+            <form action=""class="flex">
+                <a href="{% url 'user_detail' user=request.user %}"><img src="{% if not request.user.is_anonymous %}{{ request.user.user_image.url }}{% else %}{% static 'images/default_user.jpg' %}{% endif %}" alt="" class="round-image"></a>
+                <a href="{% url 'create_post' %}" class="input-redirect"><input type="text" placeholder="Create Post"></a>
+            </form>
+        </div>
+    {% endif %}
+    {% if post_list|length > 0 %}
+        {% for post in post_list %}
+        {% url 'post_detail' user=post.author id=post.id title=post|slugify as post_url %}
+                <div class="individual-post container">
+                    <!-- Post Header -->
+                    <div class="post-header">
+                        <div class="post-user flex">
+                            <div class="author-image">
+                                <a href="{% url 'user_detail' user=post.author %}"><img src="{{ post.author.user_image.url }}" alt="User image" class="round-image"></a>
+                            </div>
+                            <a href="{% url 'user_detail' user=post.author %}" class="remove-link author-username"><p>{{post.author|capfirst}}</p></a>     
+                            <div class="time-posted">
+                                <p class="date">{{ post.time_posted|blog_datetime_format }}</p>
+                            </div>
+                        </div>
+                        <div class="post-title">
+                            <a href="{{ post_url }}" class="remove-link">
+                                <h3>{{post.title}}</h3>
+                            </a>
+                        </div>
+                        {% if post.post_image != '' %}
+                                <img src="{{ post.post_image.url }}" class="post-image-img" width=500 height=300>
+                        {% endif %}
+                    </div>
+                    <!-- Post body (check if is individual post page URL) -->
+                    {% if not is_post_url %}
+                        <div class="post-body">
+                            <a href="{{ post_url }}" class="remove-link">
+                                <div class="post-content shortened-content">
+                                    <p>{{ post.content|slice:300 }}</p>
+                                </div>
+                            </a>
+                        </div>
+                        {% include 'blog/post_footer.html' %}
+                    {% else %}
+                        <div class="post-body">
+                            <p>{{post.content}}</p>
+                        </div>
+                        {% include 'blog/post_footer.html' %}
+                        <!-- Post comments -->
+                        {% include 'blog/comments_base.html' %}
+                    </div>
+                    {% endif %}
+                    <!-- End Post Body -->
+                </div>      
+        {% endfor %}
+    {% else %}
+        <div class="container">
+            <p>
+                There are no posts for you yet!
+            </p>
+        </div>
+    {% endif %}
+</div>
